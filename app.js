@@ -44,7 +44,7 @@ d.views.articles = {
       var title = cleanContent.length > 100 ?
         cleanContent.substring(0, 99) + "…" :
         cleanContent;
-      emit(doc._id, title);
+      emit(doc.date_added, title);
     }
   }
 }
