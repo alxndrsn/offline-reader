@@ -37,10 +37,21 @@ d.views.articles = {
         return html.replace(/</g, '&lt;');
       }
 
-      return { sanitize:removeTags };
+      var multipleSpaces = new RegExp('\\s+', 'gi');
+      var compressWhitespace = function(html) {
+        var oldHtml;
+        do {
+          oldHtml = html;
+          html = html.replace(multipleSpaces, ' ');
+        } while (html !== oldHtml);
+        return html;
+      }
+
+      return { removeTags:removeTags, compressWhitespace:compressWhitespace };
     }());
     if(doc.type === 'article') {
-      var cleanContent = sanitizer.sanitize(doc.content);
+      var cleanContent = sanitizer.compressWhitespace(
+          sanitizer.removeTags(doc.content));
       var title = cleanContent.length > 100 ?
         cleanContent.substring(0, 99) + "…" :
         cleanContent;
