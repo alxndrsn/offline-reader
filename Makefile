@@ -28,10 +28,10 @@ client-emulator:
 client-logs:
 	${ADB} shell logcat
 client-deploy:
-	cd nook && gradle installDebug
+	cd nook && ./gradlew --daemon installDebug
 client-to-device:
 	@[ -d '/Volumes/NOOK' ] || ( echo "Nook not attached." && exit 1 )
-	cd nook && gradle installRelease
+	cd nook && ./gradlew --daemon installRelease
 	diskutil eject /Volumes/NOOK
 	diskutil eject /Volumes/NO\ NAME
 client-screen-visible:
