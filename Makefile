@@ -12,6 +12,13 @@ db-reseed: db-drop db-init db-seed
 dev:
 	foreman start
 
+couch-test-1:
+	curl ${COUCH_URL}/_design/app/_view/articles?startkey=\"2015-05-22T10:43:10.441Z\"&endkey=\"2015-05-22T10:43:10.441Z\"
+couch-test-2:
+	curl ${COUCH_URL}/_design/app/_view/articles
+couch-test-3:
+	curl ${COUCH_URL}/_design/app/_view/articles?limit=1
+
 # NOOK STUFF
 ADB = ${ANDROID_HOME}/platform-tools/adb
 EMULATOR = ${ANDROID_HOME}/tools/emulator
