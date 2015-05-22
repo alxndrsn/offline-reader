@@ -40,4 +40,4 @@ client-screen-correct:
 	echo 'window scale 1.0' | nc localhost 5554
 
 firefox-dev:
-	cd firefox && cfx run
+	cd firefox && cfx --static-args="{\"COUCH_URL\":\"${COUCH_URL}\"}" run
