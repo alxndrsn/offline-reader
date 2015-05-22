@@ -20,7 +20,7 @@ public class DisplayArticleActivity extends Activity {
 
 		// Populate content
 		TextView content = (TextView) findViewById(R.id.article_display_content);
-		content.setText(Html.fromHtml(article.getContent()));
+		content.setText(Html.fromHtml(article.content));
 		content.setMovementMethod(LinkMovementMethod.getInstance());
 	}
 
