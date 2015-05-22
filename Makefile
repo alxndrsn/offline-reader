@@ -38,3 +38,6 @@ client-screen-visible:
 	echo 'window scale 0.9' | nc localhost 5554
 client-screen-correct:
 	echo 'window scale 1.0' | nc localhost 5554
+
+firefox:
+	cd firefox && cfx run
