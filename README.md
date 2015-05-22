@@ -25,3 +25,17 @@ Point your browser at the web interface served by couchdb, e.g.
 
 	http://localhost:5984/offliner/_design
 	
+## Browser plugin
+
+To start firefox with the browser plugin:
+
+	make firefox-dev
+
+Then browse to a page with an `<article>` tag, right-click and `Read offline`.
+
+## Mobile client
+
+To deploy to android:
+
+	make client-emulator
+	make client-deploy
