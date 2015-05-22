@@ -4,8 +4,10 @@
 
 Create a file called `.env` in the project root directory.  It should contain the following key-value pairs:
 
-	# The URL of your couch database
+	# the URL of your couch database
 	COUCH_URL=http://admin:pass@localhost:5984/offliner
+	# the path to your node_modules directory
+	NODE_PATH=/usr/local/lib/node_modules
 
 ## Create your database
 

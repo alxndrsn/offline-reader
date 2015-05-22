@@ -10,5 +10,8 @@ db-seed:
 
 webapp-start:
 	cd webapp && foreman start
-webapp-deploy:
-	cd webapp && echo "TODO!" && exit 1
+webapp-dev:
+	cd webapp/src/main/couch-design-doc && \
+		couchapp sync \
+		app.js \
+		${COUCH_URL}
