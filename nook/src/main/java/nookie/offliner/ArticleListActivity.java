@@ -20,7 +20,8 @@ public class ArticleListActivity extends Activity {
 	}
 
 	private void refreshArticlesList() {
-		List<ArticleMetadata> articles = ArticleRepo.INSTANCE.getList();
+		ArticleRepo.I.updateFromServer();
+		List<ArticleMetadata> articles = ArticleRepo.I.getList();
 		list.setAdapter(new ArrayAdapter(this,
 				R.layout.article_list_item,
 				articles));

@@ -1,32 +1,67 @@
 package nookie.offliner;
 
 import java.util.*;
+import nookie.*;
+import org.json.*;
 
 public class ArticleRepo {
-	public static final ArticleRepo INSTANCE = new ArticleRepo();
+	private static final boolean DEBUG = BuildConfig.DEBUG;
 
-	private final List<ArticleMetadata> metadata;
-	private final HashMap<String, Article> articles;
+	public static final ArticleRepo I = new ArticleRepo();
+
+	private List<ArticleMetadata> metadata;
+	private final JsonGetter json;
 
 	private ArticleRepo() {
+		json = new JsonGetter(BuildConfig.DEBUG);
+
 		metadata = Arrays.asList(
 			new ArticleMetadata("123", "gripper"),
 			new ArticleMetadata("456", "nipper")
 		);
-		articles = new HashMap();
-		add("123", "A boring article about nothing.");
-		add("456", "Another boring article about nothing.");
+	}
+
+	public void updateFromServer() {
+		String queryString = BuildConfig.COUCH_URL + "/_design/app/_view/articles";
+		try {
+			JSONObject json = this.json.get(queryString);
+			List<ArticleMetadata> metadata = asMetadata(
+					json.getJSONArray("rows"));
+			synchronized(this) {
+				this.metadata = metadata;
+			}
+		} catch(Exception _) { if(DEBUG) _.printStackTrace(); }
 	}
 
 	public List<ArticleMetadata> getList() {
-		return metadata;
+		synchronized(this) {
+			return metadata;
+		}
 	}
 
 	public Article get(String articleId) {
-		return articles.get(articleId);
+		String queryString = BuildConfig.COUCH_URL + "/" + articleId;
+		Article a = null;
+		try {
+			JSONObject json = this.json.get(queryString);
+			a = new Article(articleId,
+					json.getString("content"));
+		} catch(Exception _) { if(DEBUG) _.printStackTrace(); }
+		return a;
 	}
 
-	private void add(String id, String content) {
-		articles.put(id, new Article(id, content));
+	private List<ArticleMetadata> asMetadata(JSONArray rows) throws JSONException {
+		int len = rows.length();
+		ArrayList<ArticleMetadata> md = new ArrayList(len);
+		for(int i=0; i<len; ++i) {
+			md.add(asMetadata(rows.getJSONObject(i)));
+		}
+		return md;
+	}
+
+	private ArticleMetadata asMetadata(JSONObject raw) throws JSONException {
+		return new ArticleMetadata(
+				raw.getString("id"),
+				raw.getString("value"));
 	}
 }

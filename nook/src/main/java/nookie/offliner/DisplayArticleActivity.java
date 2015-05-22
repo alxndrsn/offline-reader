@@ -16,12 +16,15 @@ public class DisplayArticleActivity extends Activity {
 		// Fetch article object
 		Intent intent = getIntent();
 		String articleId = intent.getStringExtra("articleId");
-		Article article = ArticleRepo.INSTANCE.get(articleId);
+		Article article = ArticleRepo.I.get(articleId);
+		String content = article == null ?
+				"Error fetching article." :
+				article.content;
 
 		// Populate content
-		TextView content = (TextView) findViewById(R.id.article_display_content);
-		content.setText(Html.fromHtml(article.content));
-		content.setMovementMethod(LinkMovementMethod.getInstance());
+		TextView tView = (TextView) findViewById(R.id.article_display_content);
+		tView.setText(Html.fromHtml(content));
+		tView.setMovementMethod(LinkMovementMethod.getInstance());
 	}
 
 	public void onPause() { super.onPause(); }
