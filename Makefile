@@ -8,10 +8,5 @@ db-seed:
 	cd demo-data && for f in $$(ls *.json); do \
 		curl -X PUT -d @$${f} ${COUCH_URL}/$$(uuidgen); done
 
-webapp-start:
-	cd webapp && foreman start
-webapp-dev:
-	cd webapp/src/main/couch-design-doc && \
-		couchapp sync \
-		app.js \
-		${COUCH_URL}
+dev:
+	foreman start
