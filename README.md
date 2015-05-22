@@ -9,7 +9,7 @@ Create a file called `.env` in the project root directory.  It should contain th
 
 ## Create your database
 
-	make init-db
+	make db-init
 
 ## Push the design doc to couch
 
