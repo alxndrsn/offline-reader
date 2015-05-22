@@ -1,0 +1,8 @@
+<resources>
+	<style name="NookSimpleTouchForTheBlind"
+			parent="android:Theme.Light.NoTitleBar">
+		<item name="android:layout_width">fill_parent</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:textSize">30sp</item>
+	</style>
+</resources>

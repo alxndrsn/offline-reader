@@ -1,0 +1,44 @@
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath 'com.android.tools.build:gradle:1.2.3'
+	}
+}
+
+apply plugin: 'android'
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+dependencies {
+}
+
+ext {
+	localProperties = new Properties()
+	localProperties.load(project.rootProject.file('../.env').newDataInputStream())
+}
+
+android {
+	compileSdkVersion 'Google Inc.:Google APIs:7'
+	buildToolsVersion '22.0.1'
+	packagingOptions {
+		exclude 'META-INF/LICENSE'
+		exclude 'META-INF/NOTICE'
+	}
+
+
+	buildTypes {
+		release {
+			minifyEnabled false
+			proguardFile getDefaultProguardFile('proguard-android.txt')
+			signingConfig signingConfigs.debug
+			buildConfigField "String", "COUCH_URL", "\"${localProperties.getProperty("COUCH_URL")}\"";
+		}
+		debug {
+			buildConfigField "String", "COUCH_URL", "\"${localProperties.getProperty("COUCH_URL")}\"";
+		}
+	}
+}
