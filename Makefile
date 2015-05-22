@@ -7,6 +7,7 @@ db-drop:
 db-seed:
 	cd demo-data && for f in $$(ls *.json); do \
 		curl -X PUT -d @$${f} ${COUCH_URL}/$$(uuidgen); done
+db-reseed: db-drop db-init db-seed
 
 dev:
 	foreman start
