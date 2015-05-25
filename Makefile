@@ -51,3 +51,11 @@ client-screen-correct:
 firefox-dev:
 	cd firefox && cfx --static-args="{\"COUCH_URL\":\"${COUCH_URL}\"}" run \
 		--binary-args="-url http://www.theatlantic.com/national/archive/2015/05/john-nashs-beautiful-life/394061/"
+firefox-deploy:
+	-mkdir .attachments
+	cd firefox && \
+		cfx xpi \
+			--update-url=${COUCH_URL}/_design/app/offliner.update.rdf \
+			--update-link=${COUCH_URL}/_design/app/offliner.xpi
+		cp firefox/offliner.xpi .attachments/
+		cp firefox/offliner.update.rdf .attachments/

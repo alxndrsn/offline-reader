@@ -1,3 +1,9 @@
+# Requirements
+
+## CouchDB
+
+You'll need CouchDB, set up to run with TLS support.
+
 # Getting started
 
 ## Create a `.env` file
@@ -6,8 +12,14 @@ Create a file called `.env` in the project root directory.  It should contain th
 
 	# the path to your node_modules directory
 	NODE_PATH=/usr/local/lib/node_modules
+	# Include the following line if you are using self-signed certs for your couchdb server
+	NODE_TLS_REJECT_UNAUTHORIZED=0
+
 	# the path to your android toolkit install
 	ANDROID_HOME = /Users/user/dev/android-sdk-macosx
+
+	# the name of your couch database
+	COUCH_DBNAME=offliner
 
 	# the URL of your couch database for standard user
 	COUCH_URL=http://off:youtrot@localhost:5984/offliner

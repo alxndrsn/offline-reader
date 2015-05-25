@@ -10,6 +10,8 @@ d = {
 
 module.exports = d;
 
+couchapp.loadAttachments(d, path.join(__dirname, '.attachments'));
+
 d.views.articles = {
   map: function(doc) {
     // From: https://stackoverflow.com/questions/295566/sanitize-rewrite-html-on-the-client-side/430240#430240

@@ -1,8 +1,8 @@
 {
-  "name": "firefox",
-  "title": "firefox",
+  "name": "offliner",
+  "title": "offliner",
   "id": "jid1-w8L2yDB8rRjTKg",
-  "description": "a basic add-on",
+  "description": "Read Offline push to offliner",
   "author": "",
   "license": "MPL 2.0",
   "version": "0.1"
