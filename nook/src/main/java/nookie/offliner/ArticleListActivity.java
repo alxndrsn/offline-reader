@@ -11,9 +11,14 @@ import android.widget.*;
 
 public class ArticleListActivity extends Activity {
 	private ListView list;
+	private SharedPreferences prefs;
+
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+
+		prefs = getPreferences(Context.MODE_PRIVATE);
+		ArticleRepo.init(this);
 
 		((Button) findViewById(R.id.btnRefreshArticles))
 				.setOnClickListener(new View.OnClickListener() {
@@ -27,12 +32,20 @@ public class ArticleListActivity extends Activity {
 	}
 
 	private void refreshArticlesList() {
-		ArticleRepo.I.updateFromServer();
-		List<ArticleMetadata> articles = ArticleRepo.I.getList();
+		long now = System.currentTimeMillis(); // TODO this should be read from last-fetched
+
+		ArticleRepo.$().updateFromServer(
+				prefs.getLong("last-update", 0));
+
+		List<ArticleMetadata> articles = ArticleRepo.$().getList();
 		list.setAdapter(new ArrayAdapter(this,
 				R.layout.article_list_item,
 				articles));
 		list.setOnItemClickListener(new ArticleClickListener(this, articles));
+
+		SharedPreferences.Editor ed = prefs.edit();
+		ed.putLong("last-update", now);
+		ed.commit();
 	}
 }
 

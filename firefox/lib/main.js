@@ -25,7 +25,7 @@ var sendToServer = function(content) {
 		url: url,
 		contentType: 'application/json',
 		content: JSON.stringify({ type: 'article', content: content,
-				date_added: new Date().toString() }),
+				date_added: Date.now() }),
 		onComplete: function(response) {
 			var json = JSON.stringify(response.json);
 			console.log(json);

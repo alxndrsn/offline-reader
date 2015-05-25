@@ -16,7 +16,9 @@ public class DisplayArticleActivity extends Activity {
 		// Fetch article object
 		Intent intent = getIntent();
 		String articleId = intent.getStringExtra("articleId");
-		Article article = ArticleRepo.I.get(articleId);
+
+		Article article = ArticleRepo.$().get(articleId);
+
 		String content = article == null ?
 				"Error fetching article." :
 				article.content;
