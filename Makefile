@@ -23,7 +23,7 @@ couch-test-3:
 ADB = ${ANDROID_HOME}/platform-tools/adb
 EMULATOR = ${ANDROID_HOME}/tools/emulator
 client-emulator:
-	nohup ${EMULATOR} -avd nook-simple-touch &
+	nohup ${EMULATOR} -avd nook-simple-touch > emulator.log 2>&1 &
 	${ADB} wait-for-device
 client-logs:
 	${ADB} shell logcat
