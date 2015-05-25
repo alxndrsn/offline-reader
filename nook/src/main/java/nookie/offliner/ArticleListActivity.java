@@ -15,6 +15,13 @@ public class ArticleListActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
+		((Button) findViewById(R.id.btnRefreshArticles))
+				.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				refreshArticlesList();
+			}
+		});
+
 		list = (ListView) findViewById(R.id.lstArticles);
 		refreshArticlesList();
 	}
