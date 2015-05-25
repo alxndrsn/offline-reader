@@ -2,15 +2,25 @@ var contextMenu = require("sdk/context-menu");
 var Request = require("sdk/request").Request;
 var UUID = require('sdk/util/uuid');
 var System = require("sdk/system");
+var Base64 = require("sdk/base64");
+
+var BASIC_AUTH_MATCHER = new RegExp(/^https?:\/\/(([^:]*:[^@]*)@)?.*/);
 
 var sendToServer = function(content) {
-	var len, uuid, url;
+	var len, shortContent, url, uuid;
 	len = content.length;
-	console.log(len < 100 ? content : content.substring(0, 99) + "…");
 
 	uuid = UUID.uuid().toString().substring(1, 36);
 	url = System.staticArgs.COUCH_URL + "/" + uuid;
-	console.log("Pushing content to url: " + url);
+
+	headers = {};
+
+	var basicAuth = BASIC_AUTH_MATCHER.exec(System.staticArgs.COUCH_URL);
+	if(basicAuth && typeof basicAuth[1] !== 'undefined') {
+		headers.Authorization = "Basic " +
+				Base64.encode(basicAuth[2]);
+	}
+
 	var request = Request({
 		url: url,
 		contentType: 'application/json',
@@ -20,7 +30,8 @@ var sendToServer = function(content) {
 			var json = JSON.stringify(response.json);
 			console.log(json);
 		},
-		anonymous: true
+		anonymous: true,
+		headers: headers
 	});
 	request.put();
 }
