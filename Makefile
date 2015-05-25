@@ -1,9 +1,18 @@
 include .env
 
 db-init:
-	curl -X PUT ${COUCH_URL}
+	curl -X PUT ${COUCH_ADMIN_DB_URL}
+	curl -X PUT ${COUCH_ADMIN_URL}/_users/org.couchdb.user:${COUCH_USERNAME} \
+		-H "Content-Type: application/json" \
+		-d '{"name":"${COUCH_USERNAME}", \
+			"password":"${COUCH_PASSWORD}", \
+			"roles":[], "type":"user"}'
+	curl -X PUT ${COUCH_ADMIN_DB_URL}/_security \
+		-H "Content-Type: application/json" \
+		-d '{"admins":{"names":["${COUCH_ADMIN_USERNAME}"]}, \
+			"members":{"names":["${COUCH_USERNAME}"]}}'
 db-drop:
-	curl -X DELETE ${COUCH_URL}
+	curl -X DELETE ${COUCH_ADMIN_DB_URL}
 db-seed:
 	cd demo-data && for f in $$(ls *.json); do \
 		curl -X PUT -d @$${f} ${COUCH_URL}/$$(uuidgen); done
