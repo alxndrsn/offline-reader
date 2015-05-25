@@ -40,4 +40,5 @@ client-screen-correct:
 	echo 'window scale 1.0' | nc localhost 5554
 
 firefox-dev:
-	cd firefox && cfx --static-args="{\"COUCH_URL\":\"${COUCH_URL}\"}" run
+	cd firefox && cfx --static-args="{\"COUCH_URL\":\"${COUCH_URL}\"}" run \
+		--binary-args="-url http://www.theatlantic.com/national/archive/2015/05/john-nashs-beautiful-life/394061/"
