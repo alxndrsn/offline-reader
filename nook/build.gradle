@@ -39,7 +39,7 @@ android {
 		}
 		debug {
 			buildConfigField "String", "COUCH_URL",
-					"\"${localProperties.getProperty("COUCH_URL")}\""
+					"\"${localProperties.getProperty("COUCH_URL_FOR_DEV")}\""
 					.replace('localhost', '10.0.2.2');
 		}
 	}

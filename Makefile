@@ -49,12 +49,12 @@ client-screen-correct:
 	echo 'window scale 1.0' | nc localhost 5554
 
 firefox-dev:
-	cd firefox && cfx --static-args="{\"COUCH_URL\":\"${COUCH_URL}\"}" run \
+	cd firefox && cfx --static-args="{\"COUCH_URL\":\"${COUCH_URL_FOR_DEV}\"}" run \
 		--binary-args="-url http://www.theatlantic.com/national/archive/2015/05/john-nashs-beautiful-life/394061/"
-firefox-deploy:
+firefox-package-dev:
 	-mkdir .attachments
 	cd firefox && \
-		cfx xpi \
+		cfx --static-args="{\"COUCH_URL\":\"${COUCH_URL_FOR_DEV}\"}" xpi \
 			--update-url=${COUCH_URL}/_design/app/offliner.update.rdf \
 			--update-link=${COUCH_URL}/_design/app/offliner.xpi
 		cp firefox/offliner.xpi .attachments/
