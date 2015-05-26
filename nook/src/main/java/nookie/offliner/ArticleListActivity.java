@@ -23,12 +23,6 @@ public class ArticleListActivity extends Activity {
 		((Button) findViewById(R.id.btnRefreshArticles))
 				.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
-				refreshArticlesList();
-			}
-		});
-		((Button) findViewById(R.id.btnFetchArticles))
-				.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
 				updateArticleListFromServer();
 			}
 		});
