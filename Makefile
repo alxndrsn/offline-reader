@@ -11,6 +11,9 @@ db-init:
 		-H "Content-Type: application/json" \
 		-d '{"admins":{"names":["${COUCH_ADMIN_USERNAME}"]}, \
 			"members":{"names":["${COUCH_USERNAME}"]}}'
+	export NODE_PATH=${NODE_PATH} && \
+		export NODE_TLS_REJECT_UNAUTHORIZED=0 && \
+		couchapp push app.js ${COUCH_ADMIN_DB_URL}
 db-drop:
 	curl -k -X DELETE ${COUCH_ADMIN_DB_URL}
 db-seed:
