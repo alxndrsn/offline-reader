@@ -26,26 +26,35 @@ public class ArticleListActivity extends Activity {
 				refreshArticlesList();
 			}
 		});
+		((Button) findViewById(R.id.btnFetchArticles))
+				.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				updateArticleListFromServer();
+			}
+		});
 
 		list = (ListView) findViewById(R.id.lstArticles);
 		refreshArticlesList();
 	}
 
-	private void refreshArticlesList() {
+	private void updateArticleListFromServer() {
 		long now = System.currentTimeMillis(); // TODO this should be read from last-fetched
-
 		ArticleRepo.$().updateFromServer(
 				prefs.getLong("last-update", 0));
 
+		refreshArticlesList();
+
+		SharedPreferences.Editor ed = prefs.edit();
+		ed.putLong("last-update", now);
+		ed.commit();
+	}
+
+	private void refreshArticlesList() {
 		List<ArticleMetadata> articles = ArticleRepo.$().getList();
 		list.setAdapter(new ArrayAdapter(this,
 				R.layout.article_list_item,
 				articles));
 		list.setOnItemClickListener(new ArticleClickListener(this, articles));
-
-		SharedPreferences.Editor ed = prefs.edit();
-		ed.putLong("last-update", now);
-		ed.commit();
 	}
 }
 
@@ -60,7 +69,7 @@ class ArticleClickListener implements OnItemClickListener {
 
 	public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
 		Intent intent = new Intent(context, DisplayArticleActivity.class);
-		intent.putExtra("articleId", articles.get(position).id);
+		intent.putExtra("articleId", articles.get(position)._id);
 		context.startActivity(intent);
 	}
 }

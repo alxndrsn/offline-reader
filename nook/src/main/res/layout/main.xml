@@ -8,6 +8,11 @@
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 			/>
+	<Button android:id="@+id/btnFetchArticles"
+			android:text="Fetch new articles from server"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			/>
 	<ListView android:id="@+id/lstArticles"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"/>
