@@ -35,7 +35,7 @@ couch-test-3:
 ADB = ${ANDROID_HOME}/platform-tools/adb
 EMULATOR = ${ANDROID_HOME}/tools/emulator
 client-emulator:
-	nohup ${EMULATOR} -avd nook-simple-touch > emulator.log 2>&1 &
+	nohup ${EMULATOR} -avd nook-simple-touch -wipe-data > emulator.log 2>&1 &
 	${ADB} wait-for-device
 client-logs:
 	${ADB} shell logcat
@@ -50,8 +50,6 @@ client-screen-visible:
 	echo 'window scale 0.9' | nc localhost 5554
 client-screen-correct:
 	echo 'window scale 1.0' | nc localhost 5554
-client-clean:
-	${EMULATOR} -avd nook-simple-touch -wipe-data
 
 firefox-dev:
 	cd firefox && cfx --static-args="{\"COUCH_URL\":\"${COUCH_URL_FOR_DEV}\"}" run \
