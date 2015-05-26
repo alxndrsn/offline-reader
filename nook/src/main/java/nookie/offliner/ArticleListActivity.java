@@ -32,15 +32,20 @@ public class ArticleListActivity extends Activity {
 	}
 
 	private void updateArticleListFromServer() {
-		long now = System.currentTimeMillis(); // TODO this should be read from last-fetched
-		ArticleRepo.$().updateFromServer(
+		long latest = ArticleRepo.$().updateFromServer(
 				prefs.getLong("last-update", 0));
 
-		refreshArticlesList();
+		if(latest == 0) {
+			toast(R.string.lstArticles_update_fail);
+		} else {
+			toast(R.string.lstArticles_update_success);
 
-		SharedPreferences.Editor ed = prefs.edit();
-		ed.putLong("last-update", now);
-		ed.commit();
+			refreshArticlesList();
+
+			SharedPreferences.Editor ed = prefs.edit();
+			ed.putLong("last-update", latest);
+			ed.commit();
+		}
 	}
 
 	private void refreshArticlesList() {
@@ -49,6 +54,10 @@ public class ArticleListActivity extends Activity {
 				R.layout.article_list_item,
 				articles));
 		list.setOnItemClickListener(new ArticleClickListener(this, articles));
+	}
+
+	private void toast(int messageId) {
+		Toast.makeText(this, messageId, Toast.LENGTH_SHORT).show();
 	}
 }
 

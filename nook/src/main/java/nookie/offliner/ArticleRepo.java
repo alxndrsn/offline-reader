@@ -8,20 +8,20 @@ import java.util.*;
 import nookie.*;
 import org.json.*;
 
-import static nookie.offliner.BuildConfig.DEBUG;
+import static nookie.offliner.BuildConfig.*;
 import static nookie.Utils.*;
 
 public class ArticleRepo {
 	private static ArticleRepo INSTANCE;
 
 	private final Db db;
-	private final JsonGetter json;
+	private final ArticleFetcher fetcher;
 
 	private ArticleRepo(Context context) {
 		db = new Db(context);
 		db.init();
 
-		json = new JsonGetter(DEBUG);
+		fetcher = new ArticleFetcher();
 	}
 
 	public static void init(Context ctx) {
@@ -34,16 +34,11 @@ public class ArticleRepo {
 		return INSTANCE;
 	}
 
-	public void updateFromServer(Long lastRead) {
-		String queryString = BuildConfig.COUCH_URL +
-				"/_design/app/_view/articles";
-		if(lastRead > 0) queryString += "?startkey=" + lastRead;
-		try {
-			JSONObject json = this.json.get(queryString);
-			List<ArticleMetadata> metadata = asMetadata(
-					json.getJSONArray("rows"));
-			db.store(metadata);
-		} catch(Exception _) { if(DEBUG) _.printStackTrace(); }
+	public long updateFromServer(long lastRead) {
+		List<ArticleMetadata> metadata = fetcher.updateFromServer(lastRead);
+		db.store(metadata);
+
+		return getLatest(metadata);
 	}
 
 	public List<ArticleMetadata> getList() {
@@ -55,15 +50,50 @@ public class ArticleRepo {
 		Article a = db.get(articleId);
 		if(a == null || a.content == null) {
 			if(DEBUG) log("get() :: Article not found in DB (%s).  Fetching from server...", a);
-			a = fetch(articleId);
+			a = fetcher.fetch(articleId);
 			db.store(a);
 		}
 		return a;
 	}
 
-	private Article fetch(String _id) {
+	private long getLatest(List<ArticleMetadata> metadata) {
+		long latest = 0;
+		for(ArticleMetadata m : metadata) {
+			latest = Math.max(latest, m.dateAdded);
+		}
+		return latest;
+	}
+
+	private void log(String message, Object... args) {
+		if(DEBUG) {
+			System.err.println("LOG | ArticleRepo." + String.format(message, args));
+		}
+	}
+}
+
+class ArticleFetcher {
+	private final JsonGetter json;
+
+	ArticleFetcher() {
+		json = new JsonGetter(DEBUG);
+	}
+
+	List<ArticleMetadata> updateFromServer(long lastRead) {
+		String queryString = COUCH_URL +
+				"/_design/app/_view/articles";
+		if(lastRead > 0) queryString += "?startkey=" + (lastRead+1);
+		try {
+			JSONObject json = this.json.get(queryString);
+			return asMetadata(json.getJSONArray("rows"));
+		} catch(Exception _) {
+			if(DEBUG) _.printStackTrace();
+			return Collections.emptyList();
+		}
+	}
+
+	Article fetch(String _id) {
 		if(DEBUG) log("fetch() :: Fetching article with ID: %s", _id);
-		String queryString = BuildConfig.COUCH_URL + "/" + _id;
+		String queryString = COUCH_URL + "/" + _id;
 		Article a = null;
 		try {
 			JSONObject json = this.json.get(queryString);
@@ -84,25 +114,26 @@ public class ArticleRepo {
 	private ArticleMetadata asMetadata(JSONObject raw) throws JSONException {
 		return new ArticleMetadata(
 				raw.getString("id"),
+				raw.getLong("key"),
 				raw.getString("value"));
 	}
 
 	private void log(String message, Object... args) {
 		if(DEBUG) {
-			System.err.println("LOG | ArticleRepo." + String.format(message, args));
+			System.err.println("LOG | ArticleFetcher." + String.format(message, args));
 		}
 	}
 }
 
 class Db extends SQLiteOpenHelper {
-	private static final boolean DEBUG = BuildConfig.DEBUG;
-
 	private static final int VERSION = 1;
 	private static final String tblARTICLES = "articles";
-	private static final String clmTITLE = "title";
 	private static final String clmCONTENT = "content";
+	private static final String clmDELETED = "deleted";
 	private static final String clmID = "_id";
-	private static final String[] NO_ARGS = new String[0];
+	private static final String clmTITLE = "title";
+	private static final String TRUE = "1";
+	private static final String FALSE = "0";
 
 	private SQLiteDatabase db;
 
@@ -113,8 +144,10 @@ class Db extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		this.db = db;
 		db.execSQL(String.format(
-				"CREATE TABLE %s (%s TEXT, %s TEXT, %s TEXT)",
-				tblARTICLES, clmID, clmTITLE, clmCONTENT));
+				"CREATE TABLE %s (%s TEXT PRIMARY KEY, " +
+					"%s INTEGER NOT NULL," +
+					"%s TEXT, %s TEXT)",
+				tblARTICLES, clmID, clmDELETED, clmTITLE, clmCONTENT));
 	}
 
 	public void init() {
@@ -145,12 +178,19 @@ class Db extends SQLiteOpenHelper {
 		store(a._id, a.title, a.content);
 	}
 
+	void delete(String _id) {
+		if(DEBUG) log("delete() :: _id:%s");
+		ContentValues v = new ContentValues();
+		v.put(clmDELETED, TRUE);
+		db.update(tblARTICLES, v, "_id=?", A(_id));
+	}
+
 	List<ArticleMetadata> list() {
-		String q = String.format("SELECT %s,%s FROM %s",
-				clmID, clmTITLE, tblARTICLES);
+		String q = String.format("SELECT %s,%s FROM %s WHERE %s=?",
+				clmID, clmTITLE, tblARTICLES, clmDELETED);
 		Cursor c = null;
 		try {
-			c = db.rawQuery(q, NO_ARGS);
+			c = db.rawQuery(q, A(FALSE));
 
 			int count = c.getCount();
 			if(DEBUG) log("list() :: item fetch count: %s", count);
@@ -158,7 +198,8 @@ class Db extends SQLiteOpenHelper {
 			c.moveToFirst();
 			while(count-- > 0) {
 				list.add(new ArticleMetadata(
-						c.getString(0), c.getString(1)));
+						c.getString(0),
+						c.getString(1)));
 				c.moveToNext();
 			}
 			if(DEBUG) log("list() :: list size: %s", list.size());
@@ -178,12 +219,15 @@ class Db extends SQLiteOpenHelper {
 	}
 
 	private boolean inDb(String _id) {
+		if(DEBUG) log("inDb() :: _id=%s", _id);
 		String q = String.format("SELECT %s FROM %s WHERE %s=?",
 				clmID, tblARTICLES, clmID);
 		Cursor c = null;
 		try {
 			c = db.rawQuery(q, A(_id));
-			return c.getCount() > 0;
+			boolean found = c.getCount() > 0;
+			if(DEBUG) log("inDb() :: found=%s", found);
+			return found;
 		} finally {
 			if(c != null) c.close();
 		}
@@ -202,6 +246,7 @@ class Db extends SQLiteOpenHelper {
 			if(DEBUG) log("store() :: Updated %s in database.", _id);
 		} else {
 			v.put(clmID, _id);
+			v.put(clmDELETED, FALSE);
 			db.insert(tblARTICLES, null, v);
 			if(DEBUG) log("store() :: inserted %s into database.", _id);
 		}
