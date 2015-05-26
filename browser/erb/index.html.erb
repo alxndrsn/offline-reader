@@ -1,0 +1,66 @@
+<html>
+	<head>
+		<title>Offline Reader</title>
+		<script src="pouchdb-3.5.0.min.js"></script>
+		<script src="jquery-2.1.4.min.js"></script>
+		<script src="lodash-3.9.3.min.js"></script>
+		<script>
+		  var db_url = '<%= ENV["COUCH_URL_FOR_FUSSY_APPS"] %>';
+		  var db = new PouchDB(db_url);
+
+		  var li = function(content) {
+		    var li = $('<li>');
+		    li.append(content);
+		    return li;
+		  };
+		  var refreshList = function() {
+		    var $list = $('#to-read ul');
+		    db.allDocs({include_docs:true, descending:true},
+		      function(err, doc) {
+		        if(err) return console.log(err);
+		        $list.empty();
+		        _.forEach(doc.rows, function(doc) {
+		          var a = $('<a href="#" onclick="reader.read(\'' + 
+		              doc.id + '\')">');
+		          a.text(doc.id);
+		          $list.append(li(a));
+		        });
+		        if(doc.rows.length === 0) {
+		          $list.append(li('Nothing to read.'));
+		        }
+		      });
+		  };
+
+		  var reader = (function() {
+		    this.read = function(id) {
+		      db.get(id).then(function(doc) {
+		        $('#reader-content').append(doc.content);
+		        $('#reader').show();
+		      });
+		    };
+		    this.close = function() {
+		      $('#reader').hide();
+		      $('#reader-content').empty();
+		    };
+		    return this;
+		  }());
+		</script>
+	</head>
+	<body>
+		<div id="to-read">
+			<h1>To Read</h1>
+			<ul>
+				<li>Nothing here yet.</li>
+			</ul>
+			<button onclick="refreshList()">Refresh</button>
+		</div>
+		<div id="reader">
+			<button onclick="reader.close()">X</button>
+			<div id="reader-content"></div>
+		</div>
+		<script>
+		  reader.close();
+		  refreshList();
+		</script>
+	</body>
+</html>

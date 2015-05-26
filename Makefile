@@ -5,6 +5,11 @@ else
 include .env
 endif
 
+export COUCH_URL
+export COUCH_URL_FOR_FUSSY_APPS
+export NODE_PATH
+export NODE_TLS_REJECT_UNAUTHORIZED
+
 db-init:
 	curl -k -X PUT ${COUCH_ADMIN_DB_URL}
 	curl -k -X PUT ${COUCH_ADMIN_URL}/_users/org.couchdb.user:${COUCH_USERNAME} \
@@ -72,3 +77,9 @@ firefox-package:
 		cp firefox/offliner.xpi .attachments/
 		cp firefox/offliner.update.rdf .attachments/
 	@echo "Firefox packaging complete.  XPI and RDF available in './firefox/'."
+
+browser-deploy:
+	-mkdir -p .attachments
+	cp -r browser/static/* .attachments
+	for erb in $$(ls browser/erb/*.erb); do \
+		erb $$erb > .attachments/$$(basename $${erb%.*}); done
