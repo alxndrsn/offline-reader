@@ -56,6 +56,10 @@ public class ArticleRepo {
 		return a;
 	}
 
+	public void delete(String articleId) {
+		db.delete(articleId);
+	}
+
 	private long getLatest(List<ArticleMetadata> metadata) {
 		long latest = 0;
 		for(ArticleMetadata m : metadata) {
@@ -179,10 +183,12 @@ class Db extends SQLiteOpenHelper {
 	}
 
 	void delete(String _id) {
-		if(DEBUG) log("delete() :: _id:%s");
+		if(DEBUG) log("delete() :: _id:%s", _id);
 		ContentValues v = new ContentValues();
 		v.put(clmDELETED, TRUE);
-		db.update(tblARTICLES, v, "_id=?", A(_id));
+		v.put(clmCONTENT, NULL_STRING);
+		int rowsUpdated = db.update(tblARTICLES, v, "_id=?", A(_id));
+		if(DEBUG) log("delete() :: updated %s rows.", rowsUpdated);
 	}
 
 	List<ArticleMetadata> list() {
