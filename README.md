@@ -23,8 +23,8 @@ Create a file called `.env` in the project root directory.  It should contain th
 
 	# the URL of your couch database for standard user
 	COUCH_URL=https://off:youtrot@localhost:6984/offliner
-	# an extra URL for your couch DB in case you need non-TLS access for firefox
-	COUCH_URL_FOR_DEV=http://off:youtrot@localhost:5984/offliner
+	# an extra URL for your couch DB in case you need non-TLS access
+	COUCH_URL_FOR_FUSSY_APPS=http://off:youtrot@localhost:5984/offliner
 	# the username for your couch database user
 	COUCH_USERNAME=off
 	# the password for your couch database user

@@ -18,7 +18,9 @@ dependencies {
 
 ext {
 	localProperties = new Properties()
-	localProperties.load(project.rootProject.file('../.env').newDataInputStream())
+	def propFile = System.env.PRODUCTION ? '../.prod.env' : '../.env'
+	localProperties.load(project.rootProject
+			.file(propFile).newDataInputStream())
 }
 
 android {
@@ -39,7 +41,7 @@ android {
 		}
 		debug {
 			buildConfigField "String", "COUCH_URL",
-					"\"${localProperties.getProperty("COUCH_URL_FOR_DEV")}\""
+					"\"${localProperties.getProperty("COUCH_URL_FOR_FUSSY_APPS")}\""
 					.replace('localhost', '10.0.2.2');
 		}
 	}
