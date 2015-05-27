@@ -31,6 +31,11 @@ public class ArticleListActivity extends Activity {
 		refreshArticlesList();
 	}
 
+	public void onResume() {
+		super.onResume();
+		refreshArticlesList();
+	}
+
 	private void updateArticleListFromServer() {
 		long latest = ArticleRepo.$().updateFromServer(
 				prefs.getLong("last-update", 0));
