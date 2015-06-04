@@ -45,7 +45,7 @@ public class ArticleRepo {
 		return db.list();
 	}
 
-	public Article get(String articleId) {
+	public Article get(String articleId) throws ArticleNotFoundException {
 		if(DEBUG) log("get() :: requested: %s", articleId);
 		Article a = db.get(articleId);
 		if(a == null || a.content == null) {
@@ -95,15 +95,16 @@ class ArticleFetcher {
 		}
 	}
 
-	Article fetch(String _id) {
+	Article fetch(String _id) throws ArticleNotFoundException {
 		if(DEBUG) log("fetch() :: Fetching article with ID: %s", _id);
 		String queryString = COUCH_URL + "/" + _id;
-		Article a = null;
 		try {
 			JSONObject json = this.json.get(queryString);
-			a = new Article(_id, json.getString("content"));
-		} catch(Exception _) { if(DEBUG) _.printStackTrace(); }
-		return a;
+			return new Article(_id, json.getString("content"));
+		} catch(Exception _) {
+			if(DEBUG) _.printStackTrace();
+			throw new ArticleNotFoundException(_id);
+		}
 	}
 
 	private List<ArticleMetadata> asMetadata(JSONArray rows) throws JSONException {
@@ -158,7 +159,9 @@ class Db extends SQLiteOpenHelper {
 		if(db == null) db = getWritableDatabase();
 	}
 
-	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+	public void onUpgrade(SQLiteDatabase db,
+			int oldVersion,
+			int newVersion) {
 	}
 
 	Article get(String _id) {

@@ -20,11 +20,13 @@ public class DisplayArticleActivity extends Activity {
 		Intent intent = getIntent();
 		final String articleId = intent.getStringExtra("articleId");
 
-		Article article = ArticleRepo.$().get(articleId);
-
-		String content = article == null ?
-				"Error fetching article." :
-				article.content;
+		String content;
+		try {
+			Article article = ArticleRepo.$().get(articleId);
+			content = article.content;
+		} catch(ArticleNotFoundException ex) {
+			content = "Error fetching article.";
+		}
 
 		// Populate content
 		TextView tView = (TextView) findViewById(R.id.article_display_content);
