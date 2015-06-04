@@ -37,7 +37,7 @@ android {
 			minifyEnabled false
 			proguardFile getDefaultProguardFile('proguard-android.txt')
 			signingConfig signingConfigs.debug
-			buildConfigField "String", "COUCH_URL", "\"${localProperties.getProperty("COUCH_URL")}\"";
+			buildConfigField "String", "COUCH_URL", "\"${localProperties.getProperty("COUCH_URL_FOR_FUSSY_APPS")}\"";
 		}
 		debug {
 			buildConfigField "String", "COUCH_URL",
