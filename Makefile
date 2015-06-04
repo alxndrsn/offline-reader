@@ -35,7 +35,7 @@ dev:
 	foreman start
 
 couch-list-articles:
-	curl -k ${COUCH_URL_FOR_FUSSY_APPS}/_design/app/_view/articles
+	curl -k ${COUCH_URL}/_design/app/_view/articles
 couch-test-1:
 	curl -k ${COUCH_URL}/_design/app/_view/articles?startkey=\"2015-05-22T10:43:10.441Z\"&endkey=\"2015-05-22T10:43:10.441Z\"
 couch-test-2:
