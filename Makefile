@@ -46,22 +46,19 @@ couch-test-3:
 # NOOK STUFF
 ADB = ${ANDROID_HOME}/platform-tools/adb
 EMULATOR = ${ANDROID_HOME}/tools/emulator
+client-disconnect-usb:
+	-diskutil eject /Volumes/NOOK
+	-diskutil eject '/Volumes/NO NAME'
 client-emulator:
 	nohup ${EMULATOR} -avd nook-simple-touch -wipe-data > emulator.log 2>&1 &
 	${ADB} wait-for-device
 client-logs:
 	${ADB} shell logcat
-client-deploy:
+client-deploy: client-disconnect-usb
 	cd nook && ./gradlew --daemon installDebug
-client-deploy-release:
+client-deploy-release: client-disconnect-usb
 	@[ "${PRODUCTION}" = "true" ]
 	cd nook && ./gradlew --daemon installRelease
-client-to-device:
-	@[ "${PRODUCTION}" = "true" ]
-	@[ -d '/Volumes/NOOK' ] || ( echo "Nook not attached." && exit 1 )
-	cd nook && ./gradlew --daemon installRelease
-	diskutil eject /Volumes/NOOK
-	diskutil eject /Volumes/NO\ NAME
 client-screen-visible:
 	echo 'window scale 0.9' | nc localhost 5554
 client-screen-correct:
