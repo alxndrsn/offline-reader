@@ -195,8 +195,8 @@ class Db extends SQLiteOpenHelper {
 	}
 
 	List<ArticleMetadata> list() {
-		String q = String.format("SELECT %s,%s FROM %s WHERE %s=?",
-				clmID, clmTITLE, tblARTICLES, clmDELETED);
+		String q = String.format("SELECT %s,%s,TYPEOF(%s) FROM %s WHERE %s=?",
+				clmID, clmTITLE, clmCONTENT, tblARTICLES, clmDELETED);
 		Cursor c = null;
 		try {
 			c = db.rawQuery(q, A(FALSE));
@@ -208,7 +208,8 @@ class Db extends SQLiteOpenHelper {
 			while(count-- > 0) {
 				list.add(new ArticleMetadata(
 						c.getString(0),
-						c.getString(1)));
+						c.getString(1),
+						!c.getString(2).equals("null")));
 				c.moveToNext();
 			}
 			if(DEBUG) log("list() :: list size: %s", list.size());
