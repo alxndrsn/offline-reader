@@ -45,19 +45,36 @@ public class ArticleRepo {
 		return db.list();
 	}
 
+	public Article get(ArticleMetadata md) throws ArticleNotFoundException {
+		if(md.isDownloaded) return db.get(md._id);
+		if(DEBUG) log("get() :: Article not found in DB (%s).  Fetching from server...", md._id);
+		return get(md._id, md.isDownloaded);
+	}
+
 	public Article get(String articleId) throws ArticleNotFoundException {
-		if(DEBUG) log("get() :: requested: %s", articleId);
-		Article a = db.get(articleId);
-		if(a == null || a.content == null) {
-			if(DEBUG) log("get() :: Article not found in DB (%s).  Fetching from server...", a);
-			a = fetcher.fetch(articleId);
-			db.store(a);
-		}
+		return get(articleId, false);
+	}
+
+	private Article get(String _id, boolean isDownloaded) throws ArticleNotFoundException {
+		if(DEBUG) log("get() :: requested: %s", _id);
+		Article a = fetcher.fetch(_id);
+		db.store(a);
 		return a;
 	}
 
 	public void delete(String articleId) {
 		db.delete(articleId);
+	}
+
+	// TODO this should probably be done on a separate thread
+	public void fetchAllArticles() {
+		for(ArticleMetadata md : db.list()) {
+			try {
+				get(md);
+			} catch(ArticleNotFoundException ex) {
+				if(DEBUG) ex.printStackTrace();
+			}
+		}
 	}
 
 	private long getLatest(List<ArticleMetadata> metadata) {

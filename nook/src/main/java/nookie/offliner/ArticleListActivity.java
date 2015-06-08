@@ -9,7 +9,11 @@ import android.view.View;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.*;
 
+import static android.view.View.*;
+
 public class ArticleListActivity extends Activity {
+	private static final boolean DEBUG = BuildConfig.DEBUG;
+
 	private ListView list;
 	private SharedPreferences prefs;
 
@@ -24,6 +28,14 @@ public class ArticleListActivity extends Activity {
 				.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				updateArticleListFromServer();
+			}
+		});
+
+		((Button) findViewById(R.id.btnDownloadAllArticles))
+				.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				ArticleRepo.$().fetchAllArticles();
+				refreshArticlesList();
 			}
 		});
 
@@ -55,6 +67,15 @@ public class ArticleListActivity extends Activity {
 
 	private void refreshArticlesList() {
 		List<ArticleMetadata> articles = ArticleRepo.$().getList();
+
+		boolean allDownloaded = true;
+		for(ArticleMetadata md : articles)
+			allDownloaded = allDownloaded && md.isDownloaded;
+
+		final int visibility = allDownloaded ? GONE : VISIBLE;
+		findViewById(R.id.btnDownloadAllArticles)
+				.setVisibility(visibility);
+
 		list.setAdapter(new ArrayAdapter(this,
 				R.layout.article_list_item,
 				articles));
@@ -63,6 +84,12 @@ public class ArticleListActivity extends Activity {
 
 	private void toast(int messageId) {
 		Toast.makeText(this, messageId, Toast.LENGTH_SHORT).show();
+	}
+
+	private void log(String message, Object... args) {
+		if(DEBUG) {
+			System.err.println("LOG | ArticleListActivity." + String.format(message, args));
+		}
 	}
 }
 
