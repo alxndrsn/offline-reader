@@ -46,23 +46,31 @@ couch-test-3:
 # NOOK STUFF
 ADB = ${ANDROID_HOME}/platform-tools/adb
 EMULATOR = ${ANDROID_HOME}/tools/emulator
-client-disconnect-usb:
+nook-disconnect-usb:
 	-diskutil eject /Volumes/NOOK
 	-diskutil eject '/Volumes/NO NAME'
-client-emulator:
+nook-emulator:
 	nohup ${EMULATOR} -avd nook-simple-touch -wipe-data > emulator.log 2>&1 &
 	${ADB} wait-for-device
-client-logs:
+nook-logs:
 	${ADB} shell logcat
-client-deploy: client-disconnect-usb
+nook-deploy: nook-disconnect-usb
 	cd nook && ./gradlew --daemon installDebug
-client-deploy-release: client-disconnect-usb
+nook-deploy-release: nook-disconnect-usb
 	@[ "${PRODUCTION}" = "true" ]
 	cd nook && ./gradlew --daemon installRelease
-client-screen-visible:
+nook-screen-visible:
 	echo 'window scale 0.9' | nc localhost 5554
-client-screen-correct:
+nook-screen-correct:
 	echo 'window scale 1.0' | nc localhost 5554
+
+android-emulator:
+	nohup ${EMULATOR} -avd test -wipe-data > emulator.log 2>&1 &
+	${ADB} wait-for-device
+android-logs:
+	${ADB} shell logcat
+android-deploy:
+	cd android && ./gradlew --daemon installDebug
 
 firefox-dev:
 	cd firefox && cfx --static-args="{\"COUCH_URL\":\"${COUCH_URL_FOR_FUSSY_APPS}\"}" run \
