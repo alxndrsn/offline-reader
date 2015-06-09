@@ -13,10 +13,11 @@
 		    li.append(content);
 		    return li;
 		  };
-		  var refreshList = function() {
-		    var $list = $('#to-read ul');
-		    db.allDocs({include_docs:true, descending:true},
+
+                  var refreshList = function(list_selecter, view) {
+		    db.query('app/' + view, {include_docs:false, descending:true},
 		      function(err, doc) {
+		        var $list = $(list_selecter + ' ul');
 		        if(err) return console.log(err);
 		        $list.empty();
 		        _.forEach(doc.rows, function(doc) {
@@ -29,6 +30,11 @@
 		          $list.append(li('Nothing to read.'));
 		        }
 		      });
+		  };
+
+		  var refreshLists = function() {
+                    refreshList('#to-read', 'unread');
+                    refreshList('#read', 'read');
 		  };
 
 		  var reader = (function() {
@@ -47,12 +53,18 @@
 		</script>
 	</head>
 	<body>
+		<button onclick="refreshLists()">Refresh</button>
 		<div id="to-read">
 			<h1>To Read</h1>
 			<ul>
 				<li>Nothing here yet.</li>
 			</ul>
-			<button onclick="refreshList()">Refresh</button>
+		</div>
+		<div id="read">
+			<h1>Read</h1>
+			<ul>
+				<li>Nothing here yet.</li>
+			</ul>
 		</div>
 		<div id="reader">
 			<button onclick="reader.close()">X</button>
@@ -63,7 +75,7 @@
 		</div>
 		<script>
 		  reader.close();
-		  refreshList();
+		  refreshLists();
 		</script>
 	</body>
 </html>

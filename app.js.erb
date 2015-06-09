@@ -1,0 +1,52 @@
+<%
+  def require(lib)
+    path = "lib/#{lib}.js"
+    "// Loaded lib from: #{path}\n" +
+        IO.read(path, mode:'rb')
+  end
+%>
+
+
+var couchapp = require('couchapp'),
+    path = require('path');
+
+d = {
+  _id: '_design/app',
+  views: {},
+  lists: {},
+  shows: {}
+}
+
+module.exports = d;
+
+couchapp.loadAttachments(d, path.join(__dirname, '.attachments'));
+
+d.views.articles = {
+  map: function(doc) {
+    <%= require('sanitizer') %>
+    <%= require('article-helper') %>
+    if(doc.type === 'article') {
+      ArticleHelper.emit(doc);
+    }
+  }
+}
+
+d.views.unread = {
+  map: function(doc) {
+    <%= require('sanitizer') %>
+    <%= require('article-helper') %>
+    if(doc.type === 'article' && !doc.read) {
+      ArticleHelper.emit(doc);
+    }
+  }
+}
+
+d.views.read = {
+  map: function(doc) {
+    <%= require('sanitizer') %>
+    <%= require('article-helper') %>
+    if(doc.type === 'article' && doc.read) {
+      ArticleHelper.emit(doc);
+    }
+  }
+}
