@@ -9,7 +9,7 @@ import java.util.regex.*;
 public class EmbeddedBrowserActivity extends Activity {
 	private static final boolean DEBUG = BuildConfig.DEBUG;
 	private static final String APP_URL = BuildConfig.COUCH_URL +
-			"/_design/app/index.html";
+			"/_design/app/android-local.html";
 	private static final Pattern BASIC_AUTH = Pattern.compile(
 			"(http[s]?://)(\\w*):(\\w*)@([^/:]*)(:\\d*)?(.*)");
 

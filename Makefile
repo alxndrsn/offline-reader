@@ -5,8 +5,11 @@ else
 include .env
 endif
 
+tmp := $(shell mktemp -d /tmp/mk.offliner.XXXXXXXXXX)
+
 export COUCH_URL
 export COUCH_URL_FOR_FUSSY_APPS
+export COUCH_URL_FOR_LOCAL_ANDROID
 export NODE_PATH
 export NODE_TLS_REJECT_UNAUTHORIZED
 
@@ -90,3 +93,5 @@ browser-deploy:
 	cp -r browser/static/* .attachments
 	for erb in $$(ls browser/erb/*.erb); do \
 		erb $$erb > .attachments/$$(basename $${erb%.*}); done
+	sed s/COUCH_URL_FOR_FUSSY_APPS/COUCH_URL_FOR_LOCAL_ANDROID/ browser/erb/index.html.erb > ${tmp}/android-local.html.erb
+	erb ${tmp}/android-local.html.erb > .attachments/android-local.html

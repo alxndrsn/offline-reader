@@ -58,6 +58,9 @@
 			<button onclick="reader.close()">X</button>
 			<div id="reader-content"></div>
 		</div>
+		<div id="debug">
+		  var db_url = '<%= ENV["COUCH_URL_FOR_FUSSY_APPS"] %>';
+		</div>
 		<script>
 		  reader.close();
 		  refreshList();
