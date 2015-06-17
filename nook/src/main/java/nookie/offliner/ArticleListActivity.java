@@ -104,7 +104,9 @@ class ArticleClickListener implements OnItemClickListener {
 
 	public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
 		Intent intent = new Intent(context, DisplayArticleActivity.class);
-		intent.putExtra("articleId", articles.get(position)._id);
+		ArticleMetadata md = articles.get(position);
+		intent.putExtra("article_id", md._id);
+		intent.putExtra("article_isDownloaded", md.isDownloaded);
 		context.startActivity(intent);
 	}
 }

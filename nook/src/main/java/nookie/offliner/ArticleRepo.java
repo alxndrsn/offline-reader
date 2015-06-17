@@ -51,15 +51,15 @@ public class ArticleRepo {
 		return get(md._id, md.isDownloaded);
 	}
 
-	public Article get(String articleId) throws ArticleNotFoundException {
-		return get(articleId, false);
-	}
-
-	private Article get(String _id, boolean isDownloaded) throws ArticleNotFoundException {
-		if(DEBUG) log("get() :: requested: %s", _id);
-		Article a = fetcher.fetch(_id);
-		db.store(a);
-		return a;
+	public Article get(String _id, boolean isDownloaded) throws ArticleNotFoundException {
+		if(DEBUG) log("get() :: requested: %s, downloaded? %s", _id, isDownloaded);
+		if(isDownloaded) {
+			return db.get(_id);
+		} else {
+			Article a = fetcher.fetch(_id);
+			db.store(a);
+			return a;
+		}
 	}
 
 	public void delete(String articleId) {

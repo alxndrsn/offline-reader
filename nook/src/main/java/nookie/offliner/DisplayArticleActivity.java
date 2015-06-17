@@ -18,11 +18,12 @@ public class DisplayArticleActivity extends Activity {
 
 		// Fetch article object
 		Intent intent = getIntent();
-		final String articleId = intent.getStringExtra("articleId");
+		final String articleId = intent.getStringExtra("article_id");
+		final boolean isDownloaded = intent.getBooleanExtra("article_isDownloaded", false);
 
 		String content;
 		try {
-			Article article = ArticleRepo.$().get(articleId);
+			Article article = ArticleRepo.$().get(articleId, isDownloaded);
 			content = article.content;
 		} catch(ArticleNotFoundException ex) {
 			content = "Error fetching article.";
