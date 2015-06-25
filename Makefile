@@ -89,6 +89,10 @@ firefox-package:
 		cp firefox/offliner.update.rdf .attachments/
 	@echo "Firefox packaging complete.  XPI and RDF available in './firefox/'."
 
+browser: browser-deploy browser-go
+browser-go:
+	open ${COUCH_URL_FOR_FUSSY_APPS}/_design/app/index.html || \
+		firefox ${COUCH_URL_FOR_FUSSY_APPS}/_design/app/index.html
 browser-deploy:
 	-mkdir -p .attachments
 	cp -r browser/static/* .attachments
