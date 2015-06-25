@@ -5,5 +5,12 @@
   "description": "Read Offline push to offliner",
   "author": "",
   "license": "MPL 2.0",
-  "version": "0.1-SNAPSHOT"
+  "version": "0.1.0-SNAPSHOT",
+  "dependencies": {},
+  "devDependencies": {
+    "chai": "2.1.x"
+  },
+  "scripts": {
+    "test": "mocha --timeout 200 test/**"
+  }
 }
