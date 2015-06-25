@@ -49,14 +49,14 @@ couch-test-3:
 # NOOK STUFF
 ADB = ${ANDROID_HOME}/platform-tools/adb
 EMULATOR = ${ANDROID_HOME}/tools/emulator
+
+nook: nook-deploy android-logs
 nook-disconnect-usb:
 	-diskutil eject /Volumes/NOOK
 	-diskutil eject '/Volumes/NO NAME'
 nook-emulator:
 	nohup ${EMULATOR} -avd nook-simple-touch -wipe-data > emulator.log 2>&1 &
 	${ADB} wait-for-device
-nook-logs:
-	${ADB} shell logcat
 nook-deploy: nook-disconnect-usb
 	cd nook && ./gradlew --daemon installDebug
 nook-deploy-release: nook-disconnect-usb
@@ -67,6 +67,7 @@ nook-screen-visible:
 nook-screen-correct:
 	echo 'window scale 1.0' | nc localhost 5554
 
+android: android-deploy android-logs
 android-emulator:
 	nohup ${EMULATOR} -avd test -wipe-data > emulator.log 2>&1 &
 	${ADB} wait-for-device
