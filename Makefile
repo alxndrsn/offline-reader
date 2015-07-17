@@ -13,6 +13,9 @@ export COUCH_URL_FOR_LOCAL_ANDROID
 export NODE_PATH
 export NODE_TLS_REJECT_UNAUTHORIZED
 
+default:
+	foreman start
+
 db-init:
 	curl -k -X PUT ${COUCH_ADMIN_DB_URL}
 	curl -k -X PUT ${COUCH_ADMIN_URL}/_users/org.couchdb.user:${COUCH_USERNAME} \
